@@ -1,11 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+<head th:replace="~{header :: head}">
+
 </head>
 <body>
-  <h1>Day la trang admin</h1>
+<header th:replace="~{header :: header}">
+</header>
+<main>
+  <div id="formlogin">
+    <h1>Admin</h1>
+    <div class="manage">
+      <a class="badge badge-warning" href="">Quản lí sản phẩm</a>
+    </div>
+    <div class="manage">
+      <a class="badge badge-warning" href="">Quản lí shipper</a>
+    </div>
+    <div class="manage">
+      <a class="badge badge-warning" href="">Quản lí đơn hàng</a>
+    </div>
+    <div class="manage">
+      <a class="badge badge-warning" href="">Xem báo cáo thống kê</a>
+    </div>
+  </div>
+</main>
 </body>
 </html>

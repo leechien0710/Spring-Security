@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.demo.models.Role;
 import com.example.demo.models.User;
 public class CustomService implements UserDetails{
 	private User user;
@@ -20,13 +19,8 @@ public class CustomService implements UserDetails{
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		 List<GrantedAuthority> authorities = new ArrayList<>();
-		    
-		    // Lặp qua danh sách quyền của người dùng và chuyển đổi thành GrantedAuthority
-		    for (Role role : user.getRoles()) {
-		        GrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
+		        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
 		        authorities.add(authority);
-		    }
-
 		    return authorities;
 	}
 

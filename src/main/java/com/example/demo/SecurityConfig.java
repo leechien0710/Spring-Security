@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,18 +11,28 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.example.demo.models.User;
+
+import java.io.IOException;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 	@Autowired private UserDetailsService userDetailsService;
+	@Autowired
+	private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 	@Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -27,17 +40,30 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/","/img/**","/css/**","/login","/api/**","/signup").permitAll()
-				.requestMatchers("/admin/**").hasRole("ADMIN")
-			).formLogin((f)->f.loginPage("/login")
-					.usernameParameter("username")
-					.passwordParameter("password").
-					defaultSuccessUrl("/")
-					)
-			.logout((l)->l.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/").invalidateHttpSession(true)
-					.clearAuthentication(true))
-			.csrf().ignoringRequestMatchers("/api/**","/login","/signup","/");
+				.authorizeHttpRequests((requests) -> requests
+						.requestMatchers("/", "/img/**", "/css/**", "/login", "/api/**", "/signup").permitAll()
+						.requestMatchers("/admin/**").hasRole("ADMIN")
+				).formLogin((f) -> f.loginPage("/login")
+						.
+						successHandler(new AuthenticationSuccessHandler() {
+							@Override
+							public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+								UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+								Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+								if (roles.contains("ROLE_ADMIN")) {
+									response.sendRedirect("/admin");
+									System.out.println(userDetails.getAuthorities());
+								}
+								if (roles.contains("ROLE_USER")) {
+									response.sendRedirect("/");
+									System.out.println(userDetails.getAuthorities());
+								}
+							}
+
+						})
+				)
+				.logout((l) -> l.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/").invalidateHttpSession(true)
+						.clearAuthentication(true)).csrf().ignoringRequestMatchers("/api/**","/login","/signup","/");
 			;
 		return http.build();
 	}

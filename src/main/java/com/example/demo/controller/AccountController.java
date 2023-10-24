@@ -31,7 +31,9 @@ public class AccountController {
 			model.addAttribute("error","tai khoan da ton tai");
 			return "signup";
 		}
+		user.setPasswordBase((user.getPassword()));
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		user.setRole("ROLE_USER");
 		userService.saveUser(user);
 		return "redirect:/login";
 	}
