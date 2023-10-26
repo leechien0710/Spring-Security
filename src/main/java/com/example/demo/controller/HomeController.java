@@ -22,6 +22,10 @@ public class HomeController {
 	}
 	@GetMapping("/admin")
 	public String admin() {
-		return "admin";
+		return "index";
 	}
+	@GetMapping("/shipper")
+		public String shipper() {
+			return "responsive_table";
+		}
 }
