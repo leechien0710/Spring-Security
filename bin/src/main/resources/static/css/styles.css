@@ -1,0 +1,17 @@
+img{
+	width: 20%;
+	height: 20%;
+}
+#formlogin{
+	width: 40%;
+	margin: 50px auto;
+	border: 1px solid black;
+	padding: 50px;
+}
+h1{
+	text-align: center;
+}
+.btn-primary{
+	width: 50%;
+    margin: 30px 25%;
+}

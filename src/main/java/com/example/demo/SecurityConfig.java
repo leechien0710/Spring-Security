@@ -41,13 +41,19 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				.authorizeHttpRequests((requests) -> requests
-						.requestMatchers("/", "/img/**", "/css/**", "/login", "/api/**", "/signup").permitAll()
+						.requestMatchers("/", "/img/**", "/css/**", "/login", "/api/**", "/signup",
+								"/images/**","/js/**","/fonts/**").permitAll()
 						.requestMatchers("/admin/**").hasRole("ADMIN")
 				).formLogin((f) -> f.loginPage("/login")
-						.
-						successHandler(new AuthenticationSuccessHandler() {
+						.successHandler(new AuthenticationSuccessHandler() {
 							@Override
-							public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+							public void onAuthenticationSuccess
+							(
+									HttpServletRequest request, 
+									HttpServletResponse response, 
+									Authentication authentication
+							) 
+							throws IOException, ServletException {
 								UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 								Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 								if (roles.contains("ROLE_ADMIN")) {
@@ -59,7 +65,6 @@ public class SecurityConfig {
 									System.out.println(userDetails.getAuthorities());
 								}
 							}
-
 						})
 				)
 				.logout((l) -> l.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/").invalidateHttpSession(true)

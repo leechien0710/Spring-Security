@@ -28,7 +28,7 @@ public class AccountController {
 	@PostMapping("/signup")
 	public String postsignup(@ModelAttribute("user") User user,Model model){
 		if(!userService.CheckUsername(user.getUsername())) {
-			model.addAttribute("error","tai khoan da ton tai");
+			model.addAttribute("error","Tai khoan da ton tai");
 			return "signup";
 		}
 		user.setPasswordBase((user.getPassword()));
